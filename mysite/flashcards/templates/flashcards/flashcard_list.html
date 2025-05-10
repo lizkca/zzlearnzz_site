@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>单词卡片列表</title>
+</head>
+<body>
+    <h1>单词卡片列表</h1>
+    <div class="flashcards">
+        {% for flashcard in flashcards %}
+            <div class="flashcard">
+                <a href="{% url 'flashcard_detail' pk=flashcard.pk %}">{{ flashcard.word }}</a>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
