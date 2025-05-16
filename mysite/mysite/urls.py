@@ -20,6 +20,7 @@ from flashcards.views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home, name='home'),
+    path('', include('flashcards.urls')),
     path('flashcards/', include('flashcards.urls')),
+    path('users/', include('users.urls')),
 ]
