@@ -1,70 +1,89 @@
 {% extends "flashcards/base.html" %}
 {% block content %}
-    <div class="jumbotron">
-        <h1 class="display-4">欢迎来到英语自我对话平台！</h1>
-        <p class="lead">这是一个帮助您通过自我对话练习英语的平台。</p>
-        <hr class="my-4">
+    <div class="container py-4">
+        <div class="jumbotron">
+            <h1 class="display-4">欢迎来到我的博客</h1>
+            <p class="lead">登录以查看最新的博客文章和更多内容</p>
+            <hr class="my-4">
+            <div class="d-flex justify-content-center gap-3">
+                <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">登录</a>
+                <a class="btn btn-outline-primary btn-lg" href="{% url 'register' %}" role="button">注册</a>
+            </div>
+        </div>
+        
         {% if user.is_authenticated %}
-            <p>选择一个对话场景，开始练习吧！</p>
-            <a class="btn btn-primary btn-lg" href="#" role="button">开始练习</a>
-        {% else %}
-            <p>立即加入我们，开始您的英语对话练习之旅！</p>
-            <div class="mt-4">
-                <a class="btn btn-primary btn-lg mr-3" href="{% url 'register' %}" role="button">免费注册</a>
-                <a class="btn btn-outline-secondary btn-lg" href="{% url 'login' %}" role="button">登录</a>
+        <div class="blog-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title">最新博客文章</h2>
+                <a href="{% url 'posts:post_list' %}" class="btn btn-outline-primary">查看所有文章</a>
             </div>
-            <div class="mt-3">
-                <small class="text-muted">已经有账号？直接 <a href="{% url 'login' %}">登录</a></small>
+            
+            <div class="row">
+                {% if posts %}
+                    {% for post in posts %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary mb-3">{{ post.title_cn }}</h5>
+                                    <p class="card-text text-muted mb-2">{{ post.content_cn|truncatewords:30 }}</p>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <small class="text-muted">{{ post.created_date|date:"Y-m-d" }}</small>
+                                        <a href="{% url 'posts:post_detail' post.pk %}" class="btn btn-sm btn-primary">阅读更多</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            暂无博客文章
+                        </div>
+                    </div>
+                {% endif %}
             </div>
+        </div>
         {% endif %}
     </div>
-    
-    {% if user.is_authenticated %}
-    <div class="row mt-4">
-        <div class="col-md-3">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5>日常对话</h5>
-                </div>
-                <div class="card-body">
-                    <p>练习日常生活中的常见对话场景。</p>
-                    <a href="#" class="btn btn-outline-primary">进入</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5>旅行对话</h5>
-                </div>
-                <div class="card-body">
-                    <p>学习旅行中可能用到的英语表达。</p>
-                    <a href="#" class="btn btn-outline-primary">进入</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5>商务对话</h5>
-                </div>
-                <div class="card-body">
-                    <p>掌握职场和商务场合的英语对话。</p>
-                    <a href="#" class="btn btn-outline-primary">进入</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5>博客文章</h5>
-                </div>
-                <div class="card-body">
-                    <p>分享您的英语学习心得和经验。</p>
-                    <a href="{% url 'posts:post_list' %}" class="btn btn-outline-primary">进入</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
+
+    <style>
+        .blog-section {
+            margin-top: 2rem;
+        }
+        .card {
+            transition: transform 0.2s ease-in-out;
+            border: none;
+            background-color: #fff;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .section-title {
+            color: #333;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: #007bff;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .card-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+        }
+    </style>
 {% endblock content %}
