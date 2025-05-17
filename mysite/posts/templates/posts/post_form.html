@@ -1,0 +1,33 @@
+{% extends 'flashcards/base.html' %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">
+                    {% if form.instance.pk %}
+                        编辑文章
+                    {% else %}
+                        新文章
+                    {% endif %}
+                </legend>
+                <div class="form-group">
+                    <h3>中文版本</h3>
+                    <label for="id_title_cn">中文标题:</label>
+                    {{ form.title_cn }}
+                    <label for="id_content_cn">中文内容:</label>
+                    {{ form.content_cn }}
+                    
+                    <h3 class="mt-4">English Version</h3>
+                    <label for="id_title_en">英文标题:</label>
+                    {{ form.title_en }}
+                    <label for="id_content_en">英文内容:</label>
+                    {{ form.content_en }}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">发布</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

@@ -37,8 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'flashcards',  
+    'flashcards',
     'users',
+    'posts',  # 添加这一行
 ]
 
 MIDDLEWARE = [

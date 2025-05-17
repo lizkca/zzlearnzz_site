@@ -21,7 +21,7 @@
     
     {% if user.is_authenticated %}
     <div class="row mt-4">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card mb-4">
                 <div class="card-header">
                     <h5>日常对话</h5>
@@ -32,7 +32,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card mb-4">
                 <div class="card-header">
                     <h5>旅行对话</h5>
@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card mb-4">
                 <div class="card-header">
                     <h5>商务对话</h5>
@@ -51,6 +51,17 @@
                 <div class="card-body">
                     <p>掌握职场和商务场合的英语对话。</p>
                     <a href="#" class="btn btn-outline-primary">进入</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>博客文章</h5>
+                </div>
+                <div class="card-body">
+                    <p>分享您的英语学习心得和经验。</p>
+                    <a href="{% url 'posts:post_list' %}" class="btn btn-outline-primary">进入</a>
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
+from .models import Post
 
 class PostTests(TestCase):
     def setUp(self):
@@ -12,9 +13,9 @@ class PostTests(TestCase):
             email='test@example.com',
             password='testpassword123'
         )
-        # 设置URL
-        self.post_list_url = reverse('post_list')
-        self.post_create_url = reverse('post_create')
+        # 设置URL，添加命名空间
+        self.post_list_url = reverse('posts:post_list')
+        self.post_create_url = reverse('posts:post_create')
 
     def test_post_list_view(self):
         """测试文章列表页面"""
@@ -46,12 +47,11 @@ class PostTests(TestCase):
         response = self.client.post(self.post_create_url, new_post_data)
         self.assertTrue(Post.objects.filter(title_cn='测试文章').exists())
         new_post = Post.objects.get(title_cn='测试文章')
-        self.assertRedirects(response, reverse('post_detail', args=[new_post.id]))
+        self.assertRedirects(response, reverse('posts:post_detail', args=[new_post.id]))
 
     def test_post_language_switch(self):
         """测试文章语言切换功能"""
         self.client.login(username='testuser', password='testpassword123')
-        # 创建一篇双语文章
         post = Post.objects.create(
             title_cn='测试文章',
             content_cn='中文内容',
@@ -59,7 +59,7 @@ class PostTests(TestCase):
             content_en='English content',
             author=self.user
         )
-        response = self.client.get(reverse('post_detail', args=[post.id]))
+        response = self.client.get(reverse('posts:post_detail', args=[post.id]))
         self.assertContains(response, '测试文章')
         self.assertContains(response, 'Test Article')
         self.assertContains(response, '中文内容')
@@ -75,7 +75,7 @@ class PostTests(TestCase):
             content_en='Original Content',
             author=self.user
         )
-        update_url = reverse('post_update', args=[post.id])
+        update_url = reverse('posts:post_update', args=[post.id])
         updated_data = {
             'title_cn': '更新后的标题',
             'content_cn': '更新后的内容',
@@ -97,10 +97,10 @@ class PostTests(TestCase):
             content_en='Content to Delete',
             author=self.user
         )
-        delete_url = reverse('post_delete', args=[post.id])
+        delete_url = reverse('posts:post_delete', args=[post.id])
         response = self.client.post(delete_url)
         self.assertFalse(Post.objects.filter(id=post.id).exists())
-        self.assertRedirects(response, reverse('post_list'))
+        self.assertRedirects(response, reverse('posts:post_list'))
 
     def test_post_author_restriction(self):
         """测试非作者无法编辑/删除文章"""
@@ -120,7 +120,7 @@ class PostTests(TestCase):
         self.client.login(username='otheruser', password='testpass123')
         
         # 尝试更新文章
-        update_url = reverse('post_update', args=[post.id])
+        update_url = reverse('posts:post_update', args=[post.id])
         response = self.client.post(update_url, {
             'title_cn': '未授权的更新',
             'content_cn': '未授权的内容',
@@ -130,7 +130,7 @@ class PostTests(TestCase):
         self.assertEqual(response.status_code, 403)
         
         # 尝试删除文章
-        delete_url = reverse('post_delete', args=[post.id])
+        delete_url = reverse('posts:post_delete', args=[post.id])
         response = self.client.post(delete_url)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Post.objects.filter(id=post.id).exists())
