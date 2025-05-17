@@ -19,10 +19,12 @@
             <div id="content-cn">
                 <h2 class="article-title">{{ post.title_cn }}</h2>
                 <p class="article-content">{{ post.content_cn }}</p>
+                <button class="btn btn-info btn-sm" onclick="speak('cn')">朗读中文</button>
             </div>
             <div id="content-en" style="display: none;">
                 <h2 class="article-title">{{ post.title_en }}</h2>
                 <p class="article-content">{{ post.content_en }}</p>
+                <button class="btn btn-info btn-sm" onclick="speak('en')">Read English</button>
             </div>
         </div>
     </article>
@@ -37,5 +39,35 @@
                 document.getElementById('content-en').style.display = 'block';
             }
         }
+
+        function speak(lang) {
+            const synth = window.speechSynthesis;
+            let text;
+            let voice;
+            
+            if (lang === 'cn') {
+                text = document.querySelector('#content-cn .article-content').textContent;
+                // 选择中文声音
+                voice = synth.getVoices().find(v => v.lang.includes('zh'));
+            } else {
+                text = document.querySelector('#content-en .article-content').textContent;
+                // 选择英文声音
+                voice = synth.getVoices().find(v => v.lang.includes('en'));
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            if (voice) {
+                utterance.voice = voice;
+            }
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            
+            synth.speak(utterance);
+        }
+
+        // 确保语音列表加载完成
+        speechSynthesis.onvoiceschanged = function() {
+            console.log('Voices loaded');
+        };
     </script>
 {% endblock content %}

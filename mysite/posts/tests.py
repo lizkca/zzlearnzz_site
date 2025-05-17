@@ -134,3 +134,53 @@ class PostTests(TestCase):
         response = self.client.post(delete_url)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Post.objects.filter(id=post.id).exists())
+
+    def test_post_detail_speech_buttons(self):
+        """测试文章详情页面的朗读按钮"""
+        # 创建测试文章
+        post = Post.objects.create(
+            title_cn='测试文章',
+            content_cn='这是中文内容',
+            title_en='Test Article',
+            content_en='This is English content',
+            author=self.user
+        )
+        
+        # 访问文章详情页
+        response = self.client.get(reverse('posts:post_detail', args=[post.id]))
+        
+        # 验证页面状态码
+        self.assertEqual(response.status_code, 200)
+        
+        # 验证朗读按钮存在
+        self.assertContains(response, '朗读中文')
+        self.assertContains(response, 'Read English')
+        
+        # 验证speak函数相关的JavaScript代码存在
+        self.assertContains(response, 'function speak(')
+        self.assertContains(response, 'speechSynthesis')
+        self.assertContains(response, 'SpeechSynthesisUtterance')
+
+    def test_post_detail_speech_content(self):
+        """测试文章详情页面朗读内容的准确性"""
+        # 创建测试文章
+        test_cn_content = '这是要朗读的中文内容'
+        test_en_content = 'This is the English content to be read'
+        post = Post.objects.create(
+            title_cn='测试文章',
+            content_cn=test_cn_content,
+            title_en='Test Article',
+            content_en=test_en_content,
+            author=self.user
+        )
+        
+        # 访问文章详情页
+        response = self.client.get(reverse('posts:post_detail', args=[post.id]))
+        
+        # 验证朗读内容在页面中正确显示
+        self.assertContains(response, test_cn_content)
+        self.assertContains(response, test_en_content)
+        
+        # 验证朗读内容被正确包含在相应的div中
+        self.assertContains(response, f'<div id="content-cn">')
+        self.assertContains(response, f'<div id="content-en"')
