@@ -2,13 +2,22 @@
 {% block content %}
     <div class="container py-4">
         <div class="jumbotron">
-            <h1 class="display-4">欢迎来到我的博客</h1>
-            <p class="lead">登录以查看最新的博客文章和更多内容</p>
-            <hr class="my-4">
-            <div class="d-flex justify-content-center gap-3">
-                <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">登录</a>
-                <a class="btn btn-outline-primary btn-lg" href="{% url 'register' %}" role="button">注册</a>
-            </div>
+            {% if user.is_authenticated %}
+                <h1 class="display-4">欢迎回来，{{ user.username }}！</h1>
+                <p class="lead">开始探索更多内容吧！</p>
+                <hr class="my-4">
+                <div class="d-flex justify-content-center gap-3">
+                    <a class="btn btn-primary btn-lg" href="{% url 'posts:post_list' %}" role="button">浏览文章</a>
+                </div>
+            {% else %}
+                <h1 class="display-4">欢迎来到我的博客</h1>
+                <p class="lead">登录以查看最新的博客文章和更多内容</p>
+                <hr class="my-4">
+                <div class="d-flex justify-content-center gap-3">
+                    <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">登录</a>
+                    <a class="btn btn-outline-primary btn-lg" href="{% url 'register' %}" role="button">注册</a>
+                </div>
+            {% endif %}
         </div>
         
         {% if user.is_authenticated %}

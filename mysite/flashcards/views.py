@@ -7,7 +7,10 @@ def home(request):
         posts = Post.objects.all().order_by('-created_date')[:5]  # 获取最新的5篇文章
     else:
         posts = None
-    return render(request, 'flashcards/home.html', {'posts': posts})
+    return render(request, 'flashcards/home.html', {
+        'posts': posts,
+        'is_authenticated': request.user.is_authenticated
+    })
 
 def flashcard_list(request):
     flashcards = Flashcard.objects.all()
