@@ -1,16 +1,20 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Flashcard
 from posts.models import Post
+from announcements.models import Announcement
+from django.utils import timezone
 
 def home(request):
-    if request.user.is_authenticated:
-        posts = Post.objects.all().order_by('-created_date')[:5]  # 获取最新的5篇文章
-    else:
-        posts = None
-    return render(request, 'flashcards/home.html', {
-        'posts': posts,
-        'is_authenticated': request.user.is_authenticated
-    })
+    announcements = Announcement.objects.filter(
+        is_active=True,
+        start_date__lte=timezone.now()
+    ).exclude(
+        end_date__lt=timezone.now()
+    )
+    context = {
+        'announcements': announcements,
+    }
+    return render(request, 'flashcards/home.html', context)
 
 def flashcard_list(request):
     flashcards = Flashcard.objects.all()

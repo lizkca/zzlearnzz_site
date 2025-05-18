@@ -1,0 +1,27 @@
+{% extends "flashcards/base.html" %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">网站公告</h2>
+    {% if announcements %}
+        {% for announcement in announcements %}
+            <div class="alert alert-{{ announcement.level }} mb-3">
+                <h5 class="alert-heading">{{ announcement.title }}</h5>
+                <p class="mb-1">{{ announcement.content }}</p>
+                <hr>
+                <p class="mb-0">
+                    <small>
+                        发布时间：{{ announcement.created_at|date:"Y-m-d H:i" }}
+                        {% if announcement.end_date %}
+                        | 有效期至：{{ announcement.end_date|date:"Y-m-d H:i" }}
+                        {% endif %}
+                    </small>
+                </p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info">
+            暂无公告
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

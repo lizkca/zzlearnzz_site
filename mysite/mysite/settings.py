@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'flashcards',
     'users',
     'posts',  # 添加这一行
+    'announcements',
 ]
 
 MIDDLEWARE = [
