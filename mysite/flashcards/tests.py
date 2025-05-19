@@ -183,3 +183,38 @@ class HomePageBlogLayoutTests(TestCase):
         # 测试欢迎信息
         self.assertContains(response, '欢迎来到')
         self.assertContains(response, 'class="jumbotron"')
+
+
+class HomePageStatisticsTests(TestCase):
+    def setUp(self):
+        """测试前创建测试用户"""
+        self.client = Client()
+        self.user1 = User.objects.create_user(
+            username='testuser1',
+            password='testpass123'
+        )
+        self.user2 = User.objects.create_user(
+            username='testuser2',
+            password='testpass123'
+        )
+
+    def test_user_count_display(self):
+        """测试首页显示的用户统计数量是否正确"""
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '当前注册用户数：2')
+        
+        # 创建新用户后测试数量是否更新
+        User.objects.create_user(
+            username='testuser3',
+            password='testpass123'
+        )
+        response = self.client.get(reverse('home'))
+        self.assertContains(response, '当前注册用户数：3')
+
+    def test_statistics_card_style(self):
+        """测试统计卡片的样式是否正确"""
+        response = self.client.get(reverse('home'))
+        self.assertContains(response, '<div class="card mb-4">')
+        self.assertContains(response, '<h5 class="card-title">网站统计</h5>')
+        self.assertContains(response, '<p class="card-text">')

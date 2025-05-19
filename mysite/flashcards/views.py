@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
 from .models import Flashcard
 from posts.models import Post
@@ -13,6 +14,7 @@ def home(request):
     )
     context = {
         'announcements': announcements,
+        'total_users': User.objects.count(),  # 添加用户总数
     }
     return render(request, 'flashcards/home.html', context)
 
