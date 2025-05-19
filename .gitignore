@@ -29,21 +29,17 @@ var/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media/
 
 # 虚拟环境
 venv/
+env/
 ENV/
-.env
-.venv
-env.bak/
-venv.bak/
 
-# IDE相关
+# IDE 相关
 .idea/
 .vscode/
-*.sublime-workspace
-*.sublime-project
+*.swp
+*.swo
 
 # 系统文件
 .DS_Store
