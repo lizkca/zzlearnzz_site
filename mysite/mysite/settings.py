@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'users',
     'posts',  # 添加这一行
     'announcements',
+    'feedback',  # 添加这一行
 ]
 
 MIDDLEWARE = [
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'flashcards/templates'],  # 添加这个路径
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

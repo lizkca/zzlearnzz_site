@@ -25,4 +25,5 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('posts/', include('posts.urls')),  # 添加这一行
     path('announcements/', include('announcements.urls')),  # 添加这一行
+    path('feedback/', include('feedback.urls')),  # 添加这一行
 ]
