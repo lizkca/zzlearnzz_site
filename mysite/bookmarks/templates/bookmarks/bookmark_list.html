@@ -1,0 +1,41 @@
+{% extends "flashcards/base.html" %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>共享书签</h2>
+        {% if user.is_authenticated %}
+            <a href="{% url 'bookmarks:my_bookmarks' %}" class="btn btn-outline-primary">我的书签</a>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        {% for bookmark in bookmarks %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ bookmark.title }}</h5>
+                    <p class="card-text">{{ bookmark.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ bookmark.url }}" class="btn btn-sm btn-primary" target="_blank">
+                            访问链接
+                        </a>
+                        <small class="text-muted">
+                            由 {{ bookmark.user.username }} 分享
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                暂时没有共享的书签。
+                {% if user.is_authenticated %}
+                    <a href="{% url 'bookmarks:bookmark_create' %}">分享第一个书签</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

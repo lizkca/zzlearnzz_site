@@ -4,6 +4,7 @@ from .models import Flashcard
 from posts.models import Post
 from announcements.models import Announcement
 from django.utils import timezone
+from bookmarks.models import Bookmark
 
 def home(request):
     announcements = Announcement.objects.filter(
@@ -15,6 +16,7 @@ def home(request):
     context = {
         'announcements': announcements,
         'total_users': User.objects.count(),  # 添加用户总数
+        'public_bookmarks': Bookmark.objects.filter(is_public=True).order_by('-created_at')[:6]
     }
     return render(request, 'flashcards/home.html', context)
 

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'posts',  # 添加这一行
     'announcements',
     'feedback',  # 添加这一行
+    'bookmarks',
 ]
 
 MIDDLEWARE = [

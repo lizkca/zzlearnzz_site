@@ -1,0 +1,56 @@
+{% extends "flashcards/base.html" %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">{% if form.instance.pk %}编辑书签{% else %}添加新书签{% endif %}</h2>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group mb-3">
+            <label for="{{ form.title.id_for_label }}">标题</label>
+            {{ form.title }}
+            {% if form.title.errors %}
+            <div class="text-danger">
+                {{ form.title.errors }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group mb-3">
+            <label for="{{ form.url.id_for_label }}">链接</label>
+            {{ form.url }}
+            {% if form.url.errors %}
+            <div class="text-danger">
+                {{ form.url.errors }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group mb-3">
+            <label for="{{ form.description.id_for_label }}">描述</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+            <div class="text-danger">
+                {{ form.description.errors }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group mb-3">
+            <div class="form-check">
+                {{ form.is_public }}
+                <label class="form-check-label" for="{{ form.is_public.id_for_label }}">
+                    公开此书签
+                </label>
+            </div>
+            {% if form.is_public.errors %}
+            <div class="text-danger">
+                {{ form.is_public.errors }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a href="{% url 'bookmarks:my_bookmarks' %}" class="btn btn-secondary">取消</a>
+    </form>
+</div>
+{% endblock %}

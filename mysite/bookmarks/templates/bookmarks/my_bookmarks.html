@@ -1,0 +1,39 @@
+{% extends "flashcards/base.html" %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">我的书签</h2>
+    
+    <div class="mb-4">
+        <a href="{% url 'bookmarks:bookmark_create' %}" class="btn btn-primary">
+            添加新书签
+        </a>
+    </div>
+
+    <div class="row">
+        {% for bookmark in bookmarks %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ bookmark.title }}</h5>
+                    <p class="card-text">{{ bookmark.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ bookmark.url }}" class="btn btn-sm btn-primary" target="_blank">
+                            访问链接
+                        </a>
+                        <span class="badge {% if bookmark.is_public %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ bookmark.is_public|yesno:"公开,私密" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                您还没有添加任何书签。
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

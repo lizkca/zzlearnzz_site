@@ -16,7 +16,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from flashcards.views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +25,5 @@ urlpatterns = [
     path('posts/', include('posts.urls')),  # 添加这一行
     path('announcements/', include('announcements.urls')),  # 添加这一行
     path('feedback/', include('feedback.urls')),  # 添加这一行
+    path('bookmarks/', include('bookmarks.urls')),
 ]
