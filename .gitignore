@@ -56,3 +56,6 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+
+# Django 生产环境配置
+mysite/mysite/settings/production.py
