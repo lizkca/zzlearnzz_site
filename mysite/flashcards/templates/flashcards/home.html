@@ -54,20 +54,9 @@
         </div>
         {% endif %}
         
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">发现更多</h5>
-                        <p class="card-text">查看其他用户分享的精彩书签。</p>
-                        <a href="{% url 'bookmarks:bookmark_list' %}" class="btn btn-primary">浏览共享书签</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <style>
+        <!-- 移除重复的共享书签卡片 -->
+        
+        <style>
         .blog-section {
             margin-top: 2rem;
         }
