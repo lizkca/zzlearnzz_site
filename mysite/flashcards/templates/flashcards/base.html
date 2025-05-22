@@ -12,13 +12,13 @@
     <header class="site-header">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="{% url 'home' %}">英语对话练习</a>
+                <a class="navbar-brand" href="{% url 'home:home' %}">英语对话练习</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarToggle">
                     <div class="navbar-nav mr-auto">
-                        <a class="nav-item nav-link" href="{% url 'home' %}">首页</a>
+                        <a class="nav-item nav-link" href="{% url 'home:home' %}">首页</a>
                         <a class="nav-item nav-link" href="{% url 'announcements:announcement_list' %}">公告</a>
                         <a class="nav-item nav-link" href="{% url 'bookmarks:bookmark_list' %}">共享书签</a>
                         {% if user.is_authenticated %}

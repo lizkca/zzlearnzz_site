@@ -29,10 +29,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'flashcards',
     'users',
-    'posts',  # 添加这一行
-    'announcements',
-    'feedback',  # 添加这一行
-    'bookmarks',
+    'home',
+    'posts',  # 添加 posts 应用
+    'bookmarks',  # 添加 bookmarks 应用
+    'feedback',  # 添加 feedback 应用
+    'announcements',  # 添加 announcements 应用
 ]
 
 MIDDLEWARE = [

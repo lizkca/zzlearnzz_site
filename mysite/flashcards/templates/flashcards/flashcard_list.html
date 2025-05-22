@@ -1,16 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>单词卡片列表</title>
-</head>
-<body>
-    <h1>单词卡片列表</h1>
-    <div class="flashcards">
+{% extends 'flashcards/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">单词卡片列表 <small class="text-muted">(共{{ total_count }}个)</small></h2>
+    
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
         {% for flashcard in flashcards %}
-            <div class="flashcard">
-                <a href="{% url 'flashcard_detail' pk=flashcard.pk %}">{{ flashcard.word }}</a>
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ flashcard.word }}</h5>
+                    <p class="card-text text-muted">{{ flashcard.phonetic }}</p>
+                    <a href="{% url 'flashcard_detail' flashcard.id %}" class="btn btn-primary stretched-link">查看详情</a>
+                </div>
             </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                暂无单词卡片
+            </div>
+        </div>
         {% endfor %}
     </div>
-</body>
-</html>
+
+    {% if flashcards.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if flashcards.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ flashcards.previous_page_number }}">&laquo; 上一页</a>
+            </li>
+            {% endif %}
+
+            {% for num in flashcards.paginator.page_range %}
+            <li class="page-item {% if flashcards.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+
+            {% if flashcards.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ flashcards.next_page_number }}">下一页 &raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

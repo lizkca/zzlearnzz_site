@@ -8,6 +8,7 @@
                 <hr class="my-4">
                 <div class="d-flex justify-content-center gap-3">
                     <a class="btn btn-primary btn-lg" href="{% url 'posts:post_list' %}" role="button">浏览文章</a>
+                    <a class="btn btn-outline-primary btn-lg" href="{% url 'flashcard_list' %}" role="button">单词卡片</a>
                 </div>
             {% else %}
                 <h1 class="display-4">欢迎来到我的博客</h1>
@@ -54,53 +55,11 @@
         </div>
         {% endif %}
         
-        <!-- 移除重复的共享书签卡片 -->
-        
-        <style>
-        .blog-section {
-            margin-top: 2rem;
-        }
-        .card {
-            transition: transform 0.2s ease-in-out;
-            border: none;
-            background-color: #fff;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .section-title {
-            color: #333;
-            font-weight: 600;
-            position: relative;
-            padding-bottom: 10px;
-        }
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background-color: #007bff;
-        }
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-        .card-text {
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .btn-sm {
-            padding: 0.25rem 0.75rem;
-            font-size: 0.875rem;
-        }
-    </style>
-    
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">网站统计</h5>
-            <p class="card-text">当前注册用户数：{{ total_users }}</p>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">网站统计</h5>
+                <p class="card-text">当前注册用户数：{{ total_users }}</p>
+            </div>
         </div>
     </div>
 {% endblock content %}

@@ -1,63 +1,75 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ flashcard.word }}</title>
-    <style>
-        .flashcard {
-            width: 300px;
-            height: 200px;
-            perspective: 1000px;
-            margin: 20px auto;
-        }
-        .flashcard-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.8s;
-            transform-style: preserve-3d;
-            cursor: pointer;
-        }
-        .flashcard.flipped .flashcard-inner {
-            transform: rotateY(180deg);
-        }
-        .flashcard-front, .flashcard-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-        }
-        .flashcard-back {
-            transform: rotateY(180deg);
-            background-color: #f9f9f9;
-        }
-    </style>
-</head>
-<body>
-    <div class="flashcard">
-        <div class="flashcard-inner">
-            <div class="flashcard-front">
-                <h2>{{ flashcard.word }}</h2>
+{% extends 'flashcards/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="flashcard-container">
+                        <div class="flashcard">
+                            <div class="flashcard-front">
+                                <h2 class="text-center mb-3">{{ flashcard.word }}</h2>
+                                <p class="text-center text-muted">{{ flashcard.phonetic }}</p>
+                            </div>
+                            <div class="flashcard-back">
+                                <h4 class="mb-3">释义</h4>
+                                <p>{{ flashcard.definition }}</p>
+                                <h4 class="mb-3">例句</h4>
+                                <p>{{ flashcard.example_sentence }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="flashcard-back">
-                <p>音标：{{ flashcard.phonetic }}</p>
-                <p>释义：{{ flashcard.definition }}</p>
-                <p>例句：{{ flashcard.example_sentence }}</p>
+
+            <div class="d-flex justify-content-between mt-4">
+                {% if prev_card %}
+                <a href="{% url 'flashcard_detail' prev_card.id %}" class="btn btn-outline-primary">&laquo; 上一个</a>
+                {% else %}
+                <button class="btn btn-outline-primary" disabled>&laquo; 上一个</button>
+                {% endif %}
+
+                <a href="{% url 'flashcard_list' %}" class="btn btn-primary">返回列表</a>
+
+                {% if next_card %}
+                <a href="{% url 'flashcard_detail' next_card.id %}" class="btn btn-outline-primary">下一个 &raquo;</a>
+                {% else %}
+                <button class="btn btn-outline-primary" disabled>下一个 &raquo;</button>
+                {% endif %}
             </div>
         </div>
     </div>
-    <a href="{% url 'flashcard_list' %}">返回列表</a>
+</div>
 
-    <script>
-        document.querySelector('.flashcard').addEventListener('click', function() {
-            this.classList.toggle('flipped');
-        });
-    </script>
-</body>
-</html>
+<style>
+.flashcard-container {
+    perspective: 1000px;
+}
+
+.flashcard {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.flashcard:hover {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    padding: 20px;
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+}
+</style>
+{% endblock %}
