@@ -21,6 +21,7 @@
                         <a class="nav-item nav-link" href="{% url 'home:home' %}">首页</a>
                         <a class="nav-item nav-link" href="{% url 'announcements:announcement_list' %}">公告</a>
                         <a class="nav-item nav-link" href="{% url 'bookmarks:bookmark_list' %}">共享书签</a>
+                        <a class="nav-item nav-link" href="{% url 'flashcard_list' %}">单词卡片</a>
                         {% if user.is_authenticated %}
                         <a class="nav-item nav-link" href="{% url 'feedback:feedback_list' %}">反馈意见</a>
                         {% endif %}

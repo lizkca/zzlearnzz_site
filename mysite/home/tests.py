@@ -23,6 +23,28 @@ class HomePageTests(TestCase):
             )
             self.posts.append(post)
 
+    def test_home_page_navigation(self):
+        """测试首页导航栏"""
+        response = self.client.get(reverse('home:home'))
+        
+        # 测试基本导航链接
+        self.assertContains(response, '首页')
+        self.assertContains(response, '公告')
+        self.assertContains(response, '共享书签')
+        self.assertContains(response, '单词卡片')
+        
+        # 测试未登录用户看不到的链接
+        self.assertNotContains(response, '反馈意见')
+        
+        # 登录后测试
+        self.client.login(username='testuser', password='testpass123')
+        response = self.client.get(reverse('home:home'))
+        
+        # 测试登录后可见的链接
+        self.assertContains(response, '反馈意见')
+        self.assertContains(response, '个人资料')
+        self.assertContains(response, '退出')
+
     def test_home_page_for_anonymous(self):
         """测试未登录用户访问首页"""
         response = self.client.get(reverse('home:home'))
