@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os  # 添加这行导入语句
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -51,7 +52,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'flashcards/templates'],  # 添加这个路径
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # 现在可以正常使用 os.path.join
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
