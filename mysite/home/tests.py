@@ -35,6 +35,7 @@ class HomePageTests(TestCase):
         
         # 测试未登录用户看不到的链接
         self.assertNotContains(response, '反馈意见')
+        self.assertNotContains(response, '写博客')
         
         # 登录后测试
         self.client.login(username='testuser', password='testpass123')
@@ -42,6 +43,7 @@ class HomePageTests(TestCase):
         
         # 测试登录后可见的链接
         self.assertContains(response, '反馈意见')
+        self.assertContains(response, '写博客')
         self.assertContains(response, '个人资料')
         self.assertContains(response, '退出')
 
