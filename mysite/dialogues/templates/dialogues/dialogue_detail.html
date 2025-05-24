@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load dialogue_filters %}
+
+{% block content %}
+    <style>
+        .dialogue-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .dialogue-line {
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .dialogue-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin: 5px;
+            background-color: #f0f0f0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .dialogue-bubble[data-speaker="A"] {
+            align-self: flex-start;
+            background-color: #e3f2fd;
+        }
+        .dialogue-bubble[data-speaker="B"] {
+            align-self: flex-end;
+            background-color: #f3e5f5;
+        }
+    </style>
+    <div class="content-section">
+        <article class="media content-section">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <a class="mr-2" href="#">{{ dialogue.author }}</a>
+                    <small class="text-muted">{{ dialogue.created_date|date:"Y-m-d H:i" }}</small>
+                </div>
+                <h2 class="article-title">{{ dialogue.title }}</h2>
+                <div class="practice-section">
+                    <div class="dialogue-content" id="dialogueContent">
+                        {% with lines=dialogue.content|split_dialogue %}
+                            {% for line in lines %}
+                                {% if line|length > 0 %}
+                                    <div class="dialogue-line">
+                                        {% with speaker=line|slice:":1" %}
+                                            <div class="dialogue-bubble" data-speaker="{{ speaker }}">{{ line }}</div>
+                                        {% endwith %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endwith %}
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                        <div class="practice-controls mt-3">
+                            <button class="btn btn-primary" id="startRecording">开始录音</button>
+                            <button class="btn btn-danger" id="stopRecording" style="display: none;">停止录音</button>
+                            <button class="btn btn-success" id="playRecording" style="display: none;">播放录音</button>
+                        </div>
+                        
+                        {% if practice %}
+                            <div class="practice-stats mt-3">
+                                <p>练习次数：{{ practice.practice_count }}</p>
+                                <p>最后练习时间：{{ practice.last_practice|date:"Y-m-d H:i" }}</p>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-info mt-3">
+                            请<a href="{% url 'login' %}">登录</a>后开始练习
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+    </div>
+{% endblock content %}
+
+{% block javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let mediaRecorder;
+    let audioChunks = [];
+    let audioBlob;
+    let audioUrl;
+    
+    const startButton = document.getElementById('startRecording');
+    const stopButton = document.getElementById('stopRecording');
+    const playButton = document.getElementById('playRecording');
+    
+    if (startButton) {
+        startButton.addEventListener('click', async () => {
+            try {
+                console.log('请求麦克风权限...');
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                console.log('获取到麦克风权限');
+                
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = () => {
+                    audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    audioUrl = URL.createObjectURL(audioBlob);
+                    playButton.style.display = 'inline-block';
+                };
+                
+                audioChunks = [];
+                mediaRecorder.start();
+                startButton.style.display = 'none';
+                stopButton.style.display = 'inline-block';
+            } catch (err) {
+                console.error('录音权限获取失败:', err);
+                alert('无法获取麦克风权限，请确保已授权浏览器使用麦克风。');
+            }
+        });
+    }
+    
+    if (stopButton) {
+        stopButton.addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                startButton.style.display = 'inline-block';
+                stopButton.style.display = 'none';
+            }
+        });
+    }
+    
+    if (playButton) {
+        playButton.addEventListener('click', () => {
+            if (audioUrl) {
+                const audio = new Audio(audioUrl);
+                audio.play();
+            }
+        });
+    }
+});
+</script>
+{% endblock javascript %}

@@ -10,4 +10,5 @@ urlpatterns = [
     path('feedback/', include('feedback.urls')),  # 添加 feedback 的 URLs
     path('posts/', include('posts.urls')),  # 添加 posts 的 URLs
     path('flashcards/', include('flashcards.urls')),  # 添加 flashcards 的 URLs
+    path('dialogues/', include('dialogues.urls', namespace='dialogues')),
 ]
