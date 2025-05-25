@@ -2,6 +2,7 @@
 {% load dialogue_filters %}
 
 {% block content %}
+    {% csrf_token %}
     <style>
         .dialogue-content {
             max-width: 800px;
@@ -85,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let audioChunks = [];
     let audioBlob;
     let audioUrl;
+    let audioPlayer = null; // 添加音频播放器变量
     
     const startButton = document.getElementById('startRecording');
     const stopButton = document.getElementById('stopRecording');
@@ -105,7 +107,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 mediaRecorder.onstop = () => {
                     audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    if (audioUrl) {
+                        URL.revokeObjectURL(audioUrl); // 释放之前的URL
+                    }
                     audioUrl = URL.createObjectURL(audioBlob);
+                    console.log('录音数据已准备:', audioUrl);
                     playButton.style.display = 'inline-block';
                 };
                 
@@ -121,21 +127,88 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     if (stopButton) {
-        stopButton.addEventListener('click', () => {
+        stopButton.addEventListener('click', async () => {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') {
                 mediaRecorder.stop();
                 mediaRecorder.stream.getTracks().forEach(track => track.stop());
                 startButton.style.display = 'inline-block';
                 stopButton.style.display = 'none';
+                
+                // 获取当前对话的ID
+                const pathParts = window.location.pathname.split('/');
+                const dialogueId = pathParts[2];
+                
+                // 获取CSRF令牌
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                // 更新练习次数
+                try {
+                    console.log('正在发送练习记录请求...');
+                    const response = await fetch(`/dialogues/practice/${dialogueId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('收到服务器响应:', data);
+                    
+                    if (data.status === 'success') {
+                        // 更新页面上显示的练习次数
+                        const practiceCountElement = document.querySelector('.practice-stats p:first-child');
+                        if (practiceCountElement) {
+                            practiceCountElement.textContent = `练习次数：${data.practice_count}`;
+                            console.log('练习次数已更新');
+                        }
+                    }
+                } catch (error) {
+                    console.error('更新练习次数失败:', error);
+                    alert('更新练习次数失败，请重试');
+                }
             }
         });
     }
     
     if (playButton) {
         playButton.addEventListener('click', () => {
-            if (audioUrl) {
-                const audio = new Audio(audioUrl);
-                audio.play();
+            if (!audioUrl) {
+                console.error('没有可用的录音');
+                alert('没有可用的录音，请先录制');
+                return;
+            }
+            
+            try {
+                if (audioPlayer) {
+                    audioPlayer.pause();
+                    audioPlayer = null;
+                }
+                
+                audioPlayer = new Audio();
+                audioPlayer.src = audioUrl;
+                
+                audioPlayer.onerror = (error) => {
+                    console.error('音频加载失败:', error);
+                    alert('音频加载失败，请重新录制');
+                };
+                
+                audioPlayer.onended = () => {
+                    console.log('播放完成');
+                };
+                
+                console.log('开始播放录音...');
+                audioPlayer.play().catch(error => {
+                    console.error('播放录音失败:', error);
+                    alert('播放录音失败，请重试');
+                });
+            } catch (error) {
+                console.error('播放器初始化失败:', error);
+                alert('播放器初始化失败，请刷新页面重试');
             }
         });
     }
