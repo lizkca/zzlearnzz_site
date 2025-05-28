@@ -14,6 +14,9 @@
                     <div class="article-metadata">
                         <a class="mr-2" href="#">{{ dialogue.author }}</a>
                         <small class="text-muted">{{ dialogue.created_date|date:"Y-m-d H:i" }}</small>
+                        {% if dialogue.author == user %}
+                          <a href="{% url 'dialogues:dialogue_edit' dialogue.pk %}" class="btn btn-sm btn-secondary">编辑</a>
+                        {% endif %}
                     </div>
                     <h2>
                         <a class="article-title" href="{% url 'dialogues:dialogue_detail' dialogue.id %}">{{ dialogue.title }}</a>

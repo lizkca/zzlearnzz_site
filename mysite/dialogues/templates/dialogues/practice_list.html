@@ -1,53 +1,9 @@
-{% extends 'base.html' %}
-{% block content %}
-    <div class="content-section">
-        <h1>练习记录</h1>
-        {% for practice in practices %}
-            <article class="media content-section">
-                <div class="media-body">
-                    <h2>
-                        <a class="article-title" href="{% url 'dialogues:dialogue_detail' practice.dialogue.id %}">{{ practice.dialogue.title }}</a>
-                    </h2>
-                    <p>练习次数：{{ practice.practice_count }}</p>
-                    <p>最后练习时间：{{ practice.last_practice|date:"Y-m-d H:i" }}</p>
-                </div>
-            </article>
-        {% endfor %}
-
-        {% if is_paginated %}
-            <nav aria-label="分页">
-                <ul class="pagination">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page=1">首页</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一页</a>
-                        </li>
-                    {% endif %}
-
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                            <li class="page-item active">
-                                <span class="page-link">{{ num }}</span>
-                            </li>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">下一页</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">末页</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
-    </div>
-{% endblock content %}
+<ul class="list-group">
+    {% for practice in object_list %}
+    <li class="list-group-item">
+        {{ practice.dialogue.title }} - 练习次数：{{ practice.practice_count }}
+    </li>
+    {% empty %}
+    <li class="list-group-item">暂无练习记录</li>
+    {% endfor %}
+</ul>
