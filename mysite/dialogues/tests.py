@@ -48,6 +48,13 @@ class DialogueTests(TestCase):
         self.assertContains(response, 'id="playRecording"')
         self.assertContains(response, '播放录音')
         
+        # 测试朗读相关的按钮和控件
+        self.assertContains(response, 'id="readDialogue"')
+        self.assertContains(response, '朗读对话')
+        self.assertContains(response, 'id="stopReading"')
+        self.assertContains(response, '停止朗读')
+        self.assertContains(response, 'class="read-controls"')
+        
         # 测试练习相关的元素
         self.assertContains(response, '练习次数')
 

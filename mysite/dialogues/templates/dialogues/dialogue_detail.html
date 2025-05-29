@@ -31,6 +31,16 @@
             align-self: flex-end;
             background-color: #f3e5f5;
         }
+        .read-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        .read-button {
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
     <div class="content-section">
         <article class="media content-section">
@@ -53,6 +63,11 @@
                                 {% endif %}
                             {% endfor %}
                         {% endwith %}
+                    </div>
+                    
+                    <div class="read-controls">
+                        <button class="btn btn-info read-button" id="readDialogue">朗读对话</button>
+                        <button class="btn btn-warning read-button" id="stopReading" style="display: none;">停止朗读</button>
                     </div>
                     
                     {% if user.is_authenticated %}
@@ -82,11 +97,12 @@
 {% block javascript %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // 录音相关代码
     let mediaRecorder;
     let audioChunks = [];
     let audioBlob;
     let audioUrl;
-    let audioPlayer = null; // 添加音频播放器变量
+    let audioPlayer = null;
     
     const startButton = document.getElementById('startRecording');
     const stopButton = document.getElementById('stopRecording');
@@ -108,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 mediaRecorder.onstop = () => {
                     audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
                     if (audioUrl) {
-                        URL.revokeObjectURL(audioUrl); // 释放之前的URL
+                        URL.revokeObjectURL(audioUrl);
                     }
                     audioUrl = URL.createObjectURL(audioBlob);
                     console.log('录音数据已准备:', audioUrl);
@@ -134,14 +150,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 startButton.style.display = 'inline-block';
                 stopButton.style.display = 'none';
                 
-                // 获取当前对话的ID
                 const pathParts = window.location.pathname.split('/');
                 const dialogueId = pathParts[2];
-                
-                // 获取CSRF令牌
                 const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 
-                // 更新练习次数
                 try {
                     console.log('正在发送练习记录请求...');
                     const response = await fetch(`/dialogues/practice/${dialogueId}/`, {
@@ -160,7 +172,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('收到服务器响应:', data);
                     
                     if (data.status === 'success') {
-                        // 更新页面上显示的练习次数
                         const practiceCountElement = document.querySelector('.practice-stats p:first-child');
                         if (practiceCountElement) {
                             practiceCountElement.textContent = `练习次数：${data.practice_count}`;
@@ -211,6 +222,73 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('播放器初始化失败，请刷新页面重试');
             }
         });
+    }
+    
+    // 语音合成相关代码
+    const synth = window.speechSynthesis;
+    let speaking = false;
+    let currentUtterance = null;
+    
+    const readButton = document.getElementById('readDialogue');
+    const stopReadingButton = document.getElementById('stopReading');
+    
+    function readDialogue() {
+        if (speaking) return;
+        
+        const dialogueBubbles = document.querySelectorAll('.dialogue-bubble');
+        let utterances = [];
+        
+        dialogueBubbles.forEach(bubble => {
+            const text = bubble.textContent.trim();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-CN';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            
+            if (bubble.dataset.speaker === 'A') {
+                utterance.volume = 1.0;
+            } else {
+                utterance.volume = 0.9;
+                utterance.pitch = 1.2;
+            }
+            
+            utterances.push(utterance);
+        });
+        
+        let currentIndex = 0;
+        
+        function speakNext() {
+            if (currentIndex < utterances.length && speaking) {
+                currentUtterance = utterances[currentIndex];
+                currentUtterance.onend = () => {
+                    currentIndex++;
+                    speakNext();
+                };
+                synth.speak(currentUtterance);
+            } else {
+                stopReading();
+            }
+        }
+        
+        speaking = true;
+        readButton.style.display = 'none';
+        stopReadingButton.style.display = 'inline-block';
+        speakNext();
+    }
+    
+    function stopReading() {
+        speaking = false;
+        synth.cancel();
+        readButton.style.display = 'inline-block';
+        stopReadingButton.style.display = 'none';
+    }
+    
+    if (readButton) {
+        readButton.addEventListener('click', readDialogue);
+    }
+    
+    if (stopReadingButton) {
+        stopReadingButton.addEventListener('click', stopReading);
     }
 });
 </script>
