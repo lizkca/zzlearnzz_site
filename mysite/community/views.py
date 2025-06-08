@@ -9,7 +9,8 @@ User = get_user_model()
 # Study Group Views
 @login_required
 def group_list(request):
-    groups = StudyGroup.objects.annotate(member_count=Count('members'))
+    # Only show groups with valid slugs
+    groups = StudyGroup.objects.exclude(slug='').annotate(member_count=Count('members'))
     return render(request, 'community/group_list.html', {'groups': groups})
 
 @login_required
@@ -24,14 +25,26 @@ def group_create(request):
             return render(request, 'community/group_form.html')
             
         try:
+            # Create group and save to generate slug
             group = StudyGroup.objects.create(
                 name=name,
                 description=description,
                 admin=request.user,
                 is_private=is_private
             )
+            # Add current user as member
             group.members.add(request.user)
             messages.success(request, '学习小组创建成功！')
+            
+            # Double check we have a valid slug
+            if not group.slug:
+                group.save()  # Force slug generation
+                
+            if not group.slug:
+                messages.error(request, '小组创建失败：无法生成有效的URL')
+                group.delete()
+                return render(request, 'community/group_form.html')
+                
             return redirect('community:group_detail', slug=group.slug)
         except Exception as e:
             messages.error(request, f'创建小组时出错: {str(e)}')
