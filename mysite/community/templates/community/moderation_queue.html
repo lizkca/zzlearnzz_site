@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Moderation Queue{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Moderation Queue</h1>
+
+    {% if reports %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Reporter</th>
+                    <th>Content Type</th>
+                    <th>Reason</th>
+                    <th>Reported At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report.reporter.username }}</td>
+                    <td>{{ report.content_type|title }}</td>
+                    <td>{{ report.reason|truncatewords:10 }}</td>
+                    <td>{{ report.created_at|timesince }} ago</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#resolveModal{{ report.id }}">
+                            Resolve
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% for report in reports %}
+    <!-- Resolve Modal -->
+    <div class="modal fade" id="resolveModal{{ report.id }}" tabindex="-1" aria-labelledby="resolveModalLabel{{ report.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" action="{% url 'community:resolve_report' report.id %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="resolveModalLabel{{ report.id }}">Resolve Report</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="resolutionNotes{{ report.id }}" class="form-label">Resolution Notes</label>
+                            <textarea class="form-control" id="resolutionNotes{{ report.id }}" name="resolution_notes" rows="3" required></textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <h6>Report Details:</h6>
+                            <p><strong>Reporter:</strong> {{ report.reporter.username }}</p>
+                            <p><strong>Content Type:</strong> {{ report.content_type|title }}</p>
+                            <p><strong>Reason:</strong> {{ report.reason }}</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Resolve Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% else %}
+    <div class="alert alert-info">
+        <p>No pending reports to moderate.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

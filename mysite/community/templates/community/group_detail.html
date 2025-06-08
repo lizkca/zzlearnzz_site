@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h1 class="card-title">{{ group.name }}</h1>
+                    <p class="card-text">{{ group.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Created by {{ group.admin.username }}</small>
+                        <small class="text-muted">{{ group.members.count }} members</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Forums</h5>
+                    {% if request.user == group.admin %}
+                    <a href="{% url 'community:forum_create' group.slug %}" class="btn btn-primary btn-sm">Create Forum</a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% for forum in group.forums.all %}
+                    <div class="mb-3">
+                        <h6><a href="{% url 'community:forum_detail' forum.slug %}">{{ forum.name }}</a></h6>
+                        <p class="text-muted small mb-0">{{ forum.description|truncatewords:30 }}</p>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No forums yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Members</h5>
+                </div>
+                <div class="card-body">
+                    {% for member in group.members.all %}
+                    <div class="d-flex align-items-center mb-2">
+                        <span>{{ member.username }}</span>
+                        {% if member == group.admin %}
+                        <span class="badge bg-primary ms-2">Admin</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if request.user in group.members.all %}
+            <form method="post" action="{% url 'community:group_leave' group.slug %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger btn-block w-100">Leave Group</button>
+            </form>
+            {% else %}
+            <form method="post" action="{% url 'community:group_join' group.slug %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-block w-100">Join Group</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

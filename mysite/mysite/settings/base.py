@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'feedback',  # 添加 feedback 应用
     'announcements',  # 添加 announcements 应用
     'dialogues',  # 添加 dialogues 应用
+    'community',  # 添加 community 应用
 ]
 
 MIDDLEWARE = [

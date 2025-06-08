@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ discussion.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'community:group_list' %}">Groups</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'community:group_detail' discussion.forum.study_group.slug %}">{{ discussion.forum.study_group.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'community:forum_detail' discussion.forum.slug %}">{{ discussion.forum.name }}</a></li>
+            <li class="breadcrumb-item active">{{ discussion.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h1 class="card-title">{{ discussion.title }}</h1>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <small class="text-muted">Posted by {{ discussion.author.username }} {{ discussion.created_at|timesince }} ago</small>
+                {% if discussion.is_pinned %}
+                <span class="badge bg-info">Pinned</span>
+                {% endif %}
+            </div>
+            <div class="discussion-content">
+                {{ discussion.content|linebreaks }}
+            </div>
+            {% if request.user.is_staff or request.user == discussion.author %}
+            <div class="mt-3">
+                <a href="{% url 'community:discussion_edit' discussion.pk %}" class="btn btn-outline-primary btn-sm">Edit</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Comments</h5>
+            {% if not discussion.is_locked %}
+            <a href="{% url 'community:comment_create' discussion.pk %}" class="btn btn-primary btn-sm">Add Comment</a>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            {% for comment in comments %}
+            <div class="comment mb-4 {% if comment.is_solution %}border-success{% endif %}">
+                <div class="d-flex justify-content-between">
+                    <div class="comment-meta">
+                        <strong>{{ comment.author.username }}</strong>
+                        <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                        {% if comment.is_solution %}
+                        <span class="badge bg-success">Solution</span>
+                        {% endif %}
+                    </div>
+                    <div class="comment-actions">
+                        {% if request.user.is_staff or request.user == comment.author %}
+                        <a href="{% url 'community:comment_edit' comment.pk %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+                        {% endif %}
+                        {% if request.user == discussion.author and not comment.is_solution %}
+                        <form method="post" action="{% url 'community:mark_solution' comment.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm">Mark as Solution</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="comment-content mt-2">
+                    {{ comment.content|linebreaks }}
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No comments yet. Be the first to comment!</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

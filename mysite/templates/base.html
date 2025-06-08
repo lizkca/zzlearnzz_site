@@ -24,6 +24,7 @@
                         <a class="nav-item nav-link" href="{% url 'flashcard_list' %}">单词卡片</a>
                         <a class="nav-item nav-link" href="{% url 'dialogues:dialogue_list' %}">对话练习</a>
                         {% if user.is_authenticated %}
+                        <a class="nav-item nav-link" href="{% url 'community:group_list' %}">学习社区</a>
                         <a class="nav-item nav-link" href="{% url 'posts:post_create' %}">写博客</a>
                         <a class="nav-item nav-link" href="{% url 'feedback:feedback_list' %}">反馈意见</a>
                         {% endif %}

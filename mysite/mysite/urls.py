@@ -11,4 +11,5 @@ urlpatterns = [
     path('posts/', include('posts.urls')),  # 添加 posts 的 URLs
     path('flashcards/', include('flashcards.urls')),  # 添加 flashcards 的 URLs
     path('dialogues/', include('dialogues.urls', namespace='dialogues')),
+    path('community/', include('community.urls', namespace='community')),  # 添加 community 的 URLs
 ]

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if discussion %}Edit Discussion{% else %}New Discussion{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'community:group_list' %}">Groups</a></li>
+                    {% if discussion %}
+                    <li class="breadcrumb-item"><a href="{% url 'community:group_detail' discussion.forum.study_group.slug %}">{{ discussion.forum.study_group.name }}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'community:forum_detail' discussion.forum.slug %}">{{ discussion.forum.name }}</a></li>
+                    <li class="breadcrumb-item active">Edit Discussion</li>
+                    {% else %}
+                    <li class="breadcrumb-item"><a href="{% url 'community:group_detail' forum.study_group.slug %}">{{ forum.study_group.name }}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'community:forum_detail' forum.slug %}">{{ forum.name }}</a></li>
+                    <li class="breadcrumb-item active">New Discussion</li>
+                    {% endif %}
+                </ol>
+            </nav>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">{% if discussion %}Edit Discussion{% else %}Start New Discussion{% endif %}</h2>
+                </div>
+                <div class="card-body">
+                    {% if discussion %}
+                    <form method="post" action="{% url 'community:discussion_edit' discussion.pk %}">
+                    {% else %}
+                    <form method="post" action="{% url 'community:discussion_create' forum.slug %}">
+                    {% endif %}
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required 
+                                   value="{% if discussion %}{{ discussion.title }}{% endif %}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Content</label>
+                            <textarea class="form-control" id="content" name="content" rows="8" required>{% if discussion %}{{ discussion.content }}{% endif %}</textarea>
+                            <div class="form-text">
+                                You can use Markdown for formatting.
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                {% if discussion %}Update Discussion{% else %}Create Discussion{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if not discussion %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Forum Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">✓ Be respectful and constructive</li>
+                        <li class="mb-2">✓ Stay on topic</li>
+                        <li class="mb-2">✓ Add value to the discussion</li>
+                        <li class="mb-2">✓ Check if your question has already been asked</li>
+                        <li>✓ Use clear and descriptive titles</li>
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
