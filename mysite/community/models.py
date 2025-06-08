@@ -6,7 +6,7 @@ User = get_user_model()
 
 class StudyGroup(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     members = models.ManyToManyField(User, related_name='study_groups')
@@ -15,7 +15,21 @@ class StudyGroup(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            # Generate base slug from name
+            base_slug = slugify(self.name)
+            if not base_slug:
+                # Use timestamp if name generates empty slug
+                import time
+                base_slug = f'group-{int(time.time())}'
+            
+            # Ensure slug uniqueness
+            slug = base_slug
+            counter = 1
+            while StudyGroup.objects.filter(slug=slug).exists():
+                slug = f'{base_slug}-{counter}'
+                counter += 1
+            self.slug = slug
+            
         super().save(*args, **kwargs)
 
     def __str__(self):

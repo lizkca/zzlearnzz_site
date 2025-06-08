@@ -15,18 +15,27 @@ def group_list(request):
 @login_required
 def group_create(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        description = request.POST.get('description')
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()
         is_private = request.POST.get('is_private', False) == 'on'
-        group = StudyGroup.objects.create(
-            name=name,
-            description=description,
-            admin=request.user,
-            is_private=is_private
-        )
-        group.members.add(request.user)
-        messages.success(request, 'Study group created successfully!')
-        return redirect('community:group_detail', slug=group.slug)
+        
+        if not name:
+            messages.error(request, '小组名称不能为空')
+            return render(request, 'community/group_form.html')
+            
+        try:
+            group = StudyGroup.objects.create(
+                name=name,
+                description=description,
+                admin=request.user,
+                is_private=is_private
+            )
+            group.members.add(request.user)
+            messages.success(request, '学习小组创建成功！')
+            return redirect('community:group_detail', slug=group.slug)
+        except Exception as e:
+            messages.error(request, f'创建小组时出错: {str(e)}')
+            return render(request, 'community/group_form.html')
     return render(request, 'community/group_form.html')
 
 @login_required
