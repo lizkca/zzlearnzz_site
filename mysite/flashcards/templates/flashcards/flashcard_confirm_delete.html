@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}删除单词卡片{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">确认删除</h2>
+                </div>
+                <div class="card-body">
+                    <p>您确定要删除单词卡片 "{{ flashcard.word }}" 吗？此操作不可撤销。</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">确认删除</button>
+                            <a href="{% url 'flashcard_detail' flashcard.pk %}" class="btn btn-outline-secondary">取消</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
